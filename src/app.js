@@ -3,7 +3,8 @@ import cors from "cors";
 import pg from 'pg';
 import bcrypt from 'bcrypt';
 
-import {UserSchema} from './UserSchema.js';
+import {SubscribeSchema} from './Schemas/SubscribeSchema.js';
+import {LoginSchema} from './Schemas/LoginSchema.js';
 
 const app = express();
 
@@ -26,7 +27,7 @@ app.post('/subscribe', async (req, res) => {
     try {
         const {name, email, password} = req.body;
 
-        const errors = UserSchema.validate(req.body).error;
+        const errors = SubscribeSchema.validate(req.body).error;
 
         if(errors) return res.sendStatus(400);
         
@@ -49,6 +50,29 @@ app.post('/subscribe', async (req, res) => {
     } catch(err) {
         res.status(500).send(err);
     }
+});
+
+app.post("/sign-in", async (req, res) => {
+    const {email, password} = req.body;
+
+    const errors = LoginSchema.validate(req.body).error;
+
+    if(errors) return res.sendStatus(400);
+
+    const response = await connection.query(`
+        SELECT * FROM users WHERE email = $1
+    `,[email]);
+
+    if (!response.rows) return res.sendStatus(401);
+    
+    const user = response.rows[0];
+
+    if(bcrypt.compareSync(password, user.password)) {
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(401);
+    }
+
 })
 
 console.log("server running on port 4000");
