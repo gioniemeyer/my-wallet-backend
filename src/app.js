@@ -2,12 +2,12 @@ import express from "express";
 import cors from "cors";
 import pg from 'pg';
 import bcrypt from 'bcrypt';
+import { v4 as uuid} from 'uuid';
 
 import {SubscribeSchema} from './Schemas/SubscribeSchema.js';
 import {LoginSchema} from './Schemas/LoginSchema.js';
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
@@ -68,12 +68,43 @@ app.post("/sign-in", async (req, res) => {
     const user = response.rows[0];
 
     if(bcrypt.compareSync(password, user.password)) {
-        res.sendStatus(200);
+        const token = uuid();
+
+        await connection.query(`
+            DELETE FROM sessions WHERE "userId" = $1
+        `, [user.id]);
+
+        await connection.query(`
+            INSERT INTO sessions ("userId", token) VALUES ($1, $2)
+        `, [user.id, token]);
+        res.send(token);
     } else {
         res.sendStatus(401);
     }
-
 })
+
+app.get('/home', async (req, res) => {
+    const authorization = req.headers['authorization'];
+
+    const token = authorization?.replace("Bearer ","");
+
+    const result = await connection.query(`
+        SELECT users.* 
+        FROM sessions
+        JOIN users
+        ON users.id = sessions."userId"
+        WHERE token = $1
+    `, [token]);
+
+    const user = result.rows[0];
+
+    if(user) {
+        delete user.password;
+        res.send(user);
+    } else {
+        res.sendStatus(401);
+    }
+ })
 
 console.log("server running on port 4000");
 
