@@ -1,27 +1,14 @@
 import express from "express";
 import cors from "cors";
-import pg from 'pg';
 import bcrypt from 'bcrypt';
 import { v4 as uuid} from 'uuid';
-
+import connection from "./database.js";
 import {SubscribeSchema} from './Schemas/SubscribeSchema.js';
 import {LoginSchema} from './Schemas/LoginSchema.js';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-const databaseConfig = {
-    user: 'postgres',
-    password: '123456',
-    database: 'mywallet',
-    host: 'localhost',
-    port: 5432
-};
-
-const { Pool } = pg;
-const connection = new Pool(databaseConfig);
-
 
 app.post('/subscribe', async (req, res) => {
     try {
@@ -174,6 +161,22 @@ app.post('/new-expense', async (req, res) => {
     }
 })
 
-console.log("server running on port 4000");
+app.get('/sign-out', async (req, res) => {
+    const authorization = req.headers['authorization'];
+    const token = authorization.replace("Bearer ", "");
 
-app.listen(4000);
+    console.log(token);
+    
+    await connection.query(`
+        DELETE FROM sessions WHERE "token" = $1
+    `, [token]);
+
+    res.sendStatus(200);
+})
+
+app.get('/test', (req, res) => {
+    res.sendStatus(200)
+})
+
+
+export default app;
