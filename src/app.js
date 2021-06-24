@@ -89,7 +89,7 @@ app.get('/home', async (req, res) => {
     const token = authorization?.replace("Bearer ","");
 
     const result = await connection.query(`
-        SELECT users.* 
+        SELECT users.*, sessions.token
         FROM sessions
         JOIN users
         ON users.id = sessions."userId"
@@ -99,12 +99,80 @@ app.get('/home', async (req, res) => {
     const user = result.rows[0];
 
     if(user) {
-        delete user.password;
+        delete user?.password;
         res.send(user);
     } else {
         res.sendStatus(401);
     }
  })
+
+
+app.get('/register', async (req, res) => {
+    const authorization = req.headers['authorization'];
+    const token = authorization.replace('Bearer ', "");
+
+    const response = await connection.query(`
+        SELECT transactions.* 
+        FROM transactions
+        JOIN sessions
+        ON sessions."userId" = transactions."userId"
+        WHERE sessions.token = $1
+    `, [token]);
+
+    res.send(response.rows);
+})
+
+app.post('/new-entry', async (req, res) => {
+    try {
+        const authorization = req.headers['authorization'];
+        const token = authorization?.replace('Bearer ', "");
+
+        const {value, description} = req.body;
+
+        const valueInteger = value.replace(".", "");
+
+        const response = await connection.query(`
+            SELECT * from sessions WHERE token = $1
+        `,[token]);
+
+        const session = response.rows[0];
+
+        await connection.query(`
+            INSERT INTO transactions (date, description, value, "userId") 
+            VALUES (NOW(), $1, $2, $3)
+        `, [description, valueInteger, session.userId]);
+
+        res.sendStatus(201);
+    } catch(err) {
+        res.status(500).send(err);
+    }
+})
+
+app.post('/new-expense', async (req, res) => {
+    try {
+        const authorization = req.headers['authorization'];
+        const token = authorization?.replace('Bearer ', "");
+
+        const {value, description} = req.body;
+
+        const valueInteger = value.replace(".", "") * (-1);
+
+        const response = await connection.query(`
+            SELECT * from sessions WHERE token = $1
+        `,[token]);
+
+        const session = response.rows[0];
+
+        await connection.query(`
+            INSERT INTO transactions (date, description, value, "userId") 
+            VALUES (NOW(), $1, $2, $3)
+        `, [description, valueInteger, session.userId]);
+
+        res.sendStatus(201);
+    } catch(err) {
+        res.status(500).send(err);
+    }
+})
 
 console.log("server running on port 4000");
 
