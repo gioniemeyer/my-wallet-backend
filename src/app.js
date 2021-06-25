@@ -25,7 +25,7 @@ app.post('/subscribe', async (req, res) => {
         `,[email]);
 
 
-        if (response.rows.length > 0) return res.sendStatus(401);
+        if (response.rows.length > 0) return res.sendStatus(409);
 
         await connection.query(`
             INSERT INTO users
@@ -50,11 +50,11 @@ app.post("/sign-in", async (req, res) => {
         SELECT * FROM users WHERE email = $1
     `,[email]);
 
-    if (!response.rows) return res.sendStatus(401);
+    if (response.rows.length === 0) return res.sendStatus(404);
     
     const user = response.rows[0];
 
-    if(bcrypt.compareSync(password, user.password)) {
+    if(bcrypt.compareSync(password, user?.password)) {
         const token = uuid();
 
         await connection.query(`
@@ -93,7 +93,6 @@ app.get('/home', async (req, res) => {
     }
  })
 
-
 app.get('/register', async (req, res) => {
     const authorization = req.headers['authorization'];
     const token = authorization.replace('Bearer ', "");
@@ -116,7 +115,11 @@ app.post('/new-entry', async (req, res) => {
 
         const {value, description} = req.body;
 
-        const valueInteger = value.replace(".", "");
+        if(!value || description?.length === 0) {
+            return res.sendStatus(400);
+        }
+
+        const valueInteger = value?.replace(".", "");
 
         const response = await connection.query(`
             SELECT * from sessions WHERE token = $1
@@ -142,7 +145,13 @@ app.post('/new-expense', async (req, res) => {
 
         const {value, description} = req.body;
 
-        const valueInteger = value.replace(".", "") * (-1);
+        if(!value || description?.length === 0) {
+            return res.sendStatus(400);
+        }
+
+        const valueInteger = value?.replace(".", "");
+
+        if(valueInteger) valueInteger = valueInteger*(-1) 
 
         const response = await connection.query(`
             SELECT * from sessions WHERE token = $1
@@ -162,16 +171,18 @@ app.post('/new-expense', async (req, res) => {
 })
 
 app.get('/sign-out', async (req, res) => {
-    const authorization = req.headers['authorization'];
-    const token = authorization.replace("Bearer ", "");
-
-    console.log(token);
+    try {
+        const authorization = req.headers['authorization'];
+        const token = authorization?.replace("Bearer ", "");
     
-    await connection.query(`
-        DELETE FROM sessions WHERE "token" = $1
-    `, [token]);
+        await connection.query(`
+            DELETE FROM sessions WHERE "token" = $1
+        `, [token]);
 
-    res.sendStatus(200);
+        res.sendStatus(200);
+    } catch(err) {
+        res.status(500).send(err);
+    }
 })
 
 app.get('/test', (req, res) => {

@@ -1,6 +1,6 @@
 import supertest from "supertest";
 import app from "../src/app.js"
-import database from "../src/database.js";
+import testDatabase from "../src/testDatabase.js";
 
 // beforeEach(async() => {  })
 
