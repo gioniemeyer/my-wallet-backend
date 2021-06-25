@@ -58,12 +58,12 @@ app.post("/sign-in", async (req, res) => {
         const token = uuid();
 
         await connection.query(`
-            DELETE FROM sessions WHERE "userId" = $1
-        `, [user.id]);
+            DELETE FROM sessions WHERE "userEmail" = $1
+        `, [user.email]);
 
         await connection.query(`
-            INSERT INTO sessions ("userId", token) VALUES ($1, $2)
-        `, [user.id, token]);
+            INSERT INTO sessions ("userEmail", token) VALUES ($1, $2)
+        `, [user.email, token]);
         res.send(token);
     } else {
         res.sendStatus(401);
@@ -79,7 +79,7 @@ app.get('/home', async (req, res) => {
         SELECT users.*, sessions.token
         FROM sessions
         JOIN users
-        ON users.id = sessions."userId"
+        ON users.email = sessions."userEmail"
         WHERE token = $1
     `, [token]);
 
@@ -101,7 +101,7 @@ app.get('/register', async (req, res) => {
         SELECT transactions.* 
         FROM transactions
         JOIN sessions
-        ON sessions."userId" = transactions."userId"
+        ON sessions."userEmail" = transactions."userEmail"
         WHERE sessions.token = $1
     `, [token]);
 
@@ -128,12 +128,13 @@ app.post('/new-entry', async (req, res) => {
         const session = response.rows[0];
 
         await connection.query(`
-            INSERT INTO transactions (date, description, value, "userId") 
+            INSERT INTO transactions (date, description, value, "userEmail") 
             VALUES (NOW(), $1, $2, $3)
-        `, [description, valueInteger, session.userId]);
+        `, [description, valueInteger, session.userEmail]);
 
         res.sendStatus(201);
     } catch(err) {
+        console.log(err);
         res.status(500).send(err);
     }
 })
@@ -149,7 +150,7 @@ app.post('/new-expense', async (req, res) => {
             return res.sendStatus(400);
         }
 
-        const valueInteger = value?.replace(".", "");
+        let valueInteger = value?.replace(".", "");
 
         if(valueInteger) valueInteger = valueInteger*(-1) 
 
@@ -160,12 +161,13 @@ app.post('/new-expense', async (req, res) => {
         const session = response.rows[0];
 
         await connection.query(`
-            INSERT INTO transactions (date, description, value, "userId") 
+            INSERT INTO transactions (date, description, value, "userEmail") 
             VALUES (NOW(), $1, $2, $3)
-        `, [description, valueInteger, session.userId]);
+        `, [description, valueInteger, session.userEmail]);
 
         res.sendStatus(201);
     } catch(err) {
+        console.log(err);
         res.status(500).send(err);
     }
 })

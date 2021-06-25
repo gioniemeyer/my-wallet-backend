@@ -3,7 +3,7 @@ import pg from 'pg';
 const databaseConfig = {
     user: 'postgres',
     password: '123456',
-    database: 'mywallet',
+    database: 'testemywallet',
     host: 'localhost',
     port: 5432
 };
