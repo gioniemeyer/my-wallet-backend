@@ -33,7 +33,7 @@ app.post('/subscribe', async (req, res) => {
             VALUES ($1, $2, $3)
         `, [name, email, hash]);
 
-        res.send(201);
+        res.sendStatus(201);
     } catch(err) {
         res.status(500).send(err);
     }
@@ -64,7 +64,7 @@ app.post("/sign-in", async (req, res) => {
         await connection.query(`
             INSERT INTO sessions ("userEmail", token) VALUES ($1, $2)
         `, [user.email, token]);
-        res.send(token);
+        res.status(200).send(token);
     } else {
         res.sendStatus(401);
     }
@@ -87,7 +87,7 @@ app.get('/home', async (req, res) => {
 
     if(user) {
         delete user?.password;
-        res.send(user);
+        res.status(200).send(user);
     } else {
         res.sendStatus(401);
     }
@@ -105,7 +105,7 @@ app.get('/register', async (req, res) => {
         WHERE sessions.token = $1
     `, [token]);
 
-    res.send(response.rows);
+    res.status(200).send(response.rows);
 })
 
 app.post('/new-entry', async (req, res) => {
