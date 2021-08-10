@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npx jest tests/app.test.js",
     "dev": "npx nodemon src/server.js"
   },
   "keywords": [],
@@ -25,8 +25,12 @@
     "@babel/plugin-transform-runtime": "^7.14.5",
     "@babel/preset-env": "^7.14.7",
     "babel-jest": "^27.0.5",
+    "eslint": "^7.32.0",
+    "eslint-plugin-react": "^7.24.0",
+    "i": "^0.3.6",
     "jest": "^27.0.5",
     "nodemon": "^2.0.7",
+    "npm": "^7.20.5",
     "supertest": "^6.1.3"
   }
 }

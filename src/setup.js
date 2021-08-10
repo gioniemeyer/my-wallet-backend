@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 const loadDotEnv = dotenv.config();
 
-export default loadDotEnv
+export default loadDotEnv;
