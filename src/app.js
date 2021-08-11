@@ -1,74 +1,16 @@
 import express from "express";
 import cors from "cors";
-import bcrypt from "bcrypt";
-import { v4 as uuid} from "uuid";
 import connection from "./database.js";
-import {SubscribeSchema} from "./Schemas/SubscribeSchema.js";
-import {LoginSchema} from "./Schemas/LoginSchema.js";
+
+import * as loginController from "./controllers/loginController.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.post("/subscribe", async (req, res) => {
-	try {
-		const {name, email, password} = req.body;
+app.post("/subscribe", loginController.signUp);
 
-		const errors = SubscribeSchema.validate(req.body).error;
-
-		if(errors) return res.sendStatus(400);
-        
-		const hash = bcrypt.hashSync(password, 10);
-
-		const response = await connection.query(`
-            SELECT * FROM users WHERE email = $1
-        `,[email]);
-
-
-		if (response.rows.length > 0) return res.sendStatus(409);
-
-		await connection.query(`
-            INSERT INTO users
-            (name, email, password)
-            VALUES ($1, $2, $3)
-        `, [name, email, hash]);
-
-		res.sendStatus(201);
-	} catch(err) {
-		res.status(500).send(err);
-	}
-});
-
-app.post("/sign-in", async (req, res) => {
-	const {email, password} = req.body;
-
-	const errors = LoginSchema.validate(req.body).error;
-
-	if(errors) return res.sendStatus(400);
-
-	const response = await connection.query(`
-        SELECT * FROM users WHERE email = $1
-    `,[email]);
-
-	if (response.rows.length === 0) return res.sendStatus(404);
-    
-	const user = response.rows[0];
-
-	if(bcrypt.compareSync(password, user?.password)) {
-		const token = uuid();
-
-		await connection.query(`
-            DELETE FROM sessions WHERE "userEmail" = $1
-        `, [user.email]);
-
-		await connection.query(`
-            INSERT INTO sessions ("userEmail", token) VALUES ($1, $2)
-        `, [user.email, token]);
-		res.status(200).send(token);
-	} else {
-		res.sendStatus(401);
-	}
-});
+app.post("/sign-in", loginController.signIn);
 
 app.get("/home", async (req, res) => {
 	const authorization = req.headers["authorization"];
