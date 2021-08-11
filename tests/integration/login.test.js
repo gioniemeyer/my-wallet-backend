@@ -60,3 +60,20 @@ describe("POST /sign-in", () => {
 		expect(result.status).toEqual(401);
 	});
 }); 
+
+describe("GET /sign-out", () => {
+	it("returns 200 when logged user sign-out", async () => {
+		await supertest(app).post("/subscribe").send(user);
+		const tokenResp = await supertest(app).post("/sign-in").send(signInBody);
+		const token = tokenResp.text;
+		
+		await supertest(app).get("/home")
+			.set("Authorization", `Bearer ${token}`);
+		const response = await supertest(app).get("/sign-out")
+			.set("Authorization", `Bearer ${token}`);
+		
+		expect(response.status).toEqual(200);
+
+	});
+	
+}); 
