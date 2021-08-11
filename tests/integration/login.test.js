@@ -73,7 +73,6 @@ describe("GET /sign-out", () => {
 			.set("Authorization", `Bearer ${token}`);
 		
 		expect(response.status).toEqual(200);
-
 	});
 	
 }); 
