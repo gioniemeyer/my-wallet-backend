@@ -1,11 +1,11 @@
-import { SubscribeSchema } from "../schemas/SubscribeSchema.js";
-import { LoginSchema } from "../schemas/LoginSchema.js";
+import { SignUpSchema } from "../schemas/SignUpSchema.js";
+import { SignInChema } from "../schemas/SignInChema.js";
 import * as loginService from "../services/loginService.js";
 
 export async function signUp(req, res) {
 	try {
 		const {name, email, password} = req.body;
-		const errors = SubscribeSchema.validate(req.body).error;
+		const errors = SignUpSchema.validate(req.body).error;
 		if(errors) return res.sendStatus(400);
         
 		const response = await loginService.signUp(name, email, password);
@@ -20,7 +20,7 @@ export async function signUp(req, res) {
 export async function signIn(req, res) {
 	try {
 		const {email, password} = req.body;
-		const errors = LoginSchema.validate(req.body).error;
+		const errors = SignInChema.validate(req.body).error;
 		if(errors) return res.sendStatus(400);
 
 		const validUser = await loginService.checkUserByEmail(email);

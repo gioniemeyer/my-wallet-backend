@@ -1,9 +1,8 @@
 import joi from "joi";
 
-const SubscribeSchema = joi.object({
-	name: joi.string().required(),
+const SignInChema = joi.object({
 	email: joi.string().required(),    
 	password: joi.string().required()
 });
 
-export { SubscribeSchema };
+export { SignInChema };

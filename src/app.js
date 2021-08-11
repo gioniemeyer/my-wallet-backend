@@ -3,6 +3,8 @@ import cors from "cors";
 import connection from "./database.js";
 
 import * as loginController from "./controllers/loginController.js";
+import * as authMiddleware from "./middlewares/authMiddleware.js";
+import * as userController from "./controllers/userController.js";
 
 const app = express();
 app.use(cors());
@@ -12,28 +14,7 @@ app.post("/subscribe", loginController.signUp);
 
 app.post("/sign-in", loginController.signIn);
 
-app.get("/home", async (req, res) => {
-	const authorization = req.headers["authorization"];
-
-	const token = authorization?.replace("Bearer ","");
-
-	const result = await connection.query(`
-        SELECT users.*, sessions.token
-        FROM sessions
-        JOIN users
-        ON users.email = sessions."userEmail"
-        WHERE token = $1
-    `, [token]);
-
-	const user = result.rows[0];
-
-	if(user) {
-		delete user?.password;
-		res.status(200).send(user);
-	} else {
-		res.sendStatus(401);
-	}
-});
+app.get("/home", authMiddleware.validateToken, userController.sendUserInfos);
 
 app.get("/register", async (req, res) => {
 	const authorization = req.headers["authorization"];
