@@ -2,7 +2,7 @@
 import supertest from "supertest";
 import app from "../../src/app.js";
 import { clearDatabase, endConnection } from "../utils/database.js";
-import {generateSignUpBody, generateWrongSignUpBody} from "../factories/loginFactory.js";
+import {user, generateWrongSignUpBody} from "../factories/loginFactory.js";
 
 beforeEach(async () => {
 	await clearDatabase();
@@ -12,7 +12,6 @@ afterAll(async () => {
 	endConnection();
 });
 
-const user = generateSignUpBody();
 const wrongUser = generateWrongSignUpBody();
 
 describe("GET /subscribe", () => {

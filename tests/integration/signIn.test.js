@@ -2,18 +2,28 @@
 import supertest from "supertest";
 import app from "../../src/app.js";
 import { clearDatabase, endConnection } from "../utils/database.js";
-import {
-	user, signInBody, wrongSignInBody, incompleteSignInBody
-} from "../factories/loginFactory.js";
+import { generateSignUpBody } from "../factories/loginFactory.js";
 
 beforeEach(async () => {
 	await clearDatabase();
-
 });
 
 afterAll(async () => {
 	endConnection();
 });
+
+const user = generateSignUpBody();
+const signInBody = {
+	email: user.email,
+	password: user.password
+};
+const incompleteSignInBody = {
+	email: user.email
+};
+const wrongSignInBody = {
+	email: user.email,
+	password: user.password + "erro"
+};
 
 describe("POST /sign-in", () => {
 	it("returns a token when correct email and password", async () => {
