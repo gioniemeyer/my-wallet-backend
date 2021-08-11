@@ -35,3 +35,13 @@ export async function signIn(req, res) {
 		res.status(500).send(err);
 	}
 }
+
+export async function signOut(req, res) {
+	try {
+		const user = res.locals.user;
+		await loginService.signOut(user);
+		res.sendStatus(200);
+	} catch(err) {
+		res.status(500).send(err);
+	}
+}

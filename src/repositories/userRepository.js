@@ -24,7 +24,7 @@ export async function getUserTransactions(token) {
 	return registers.rows;
 }
 
-export async function addExpense(valueInteger,description, email) {
+export async function addUserTransaction(valueInteger,description, email) {
 	connection.query(`
     INSERT INTO transactions (date, description, value, "userEmail") 
     VALUES (NOW(), $1, $2, $3)

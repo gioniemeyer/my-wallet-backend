@@ -41,3 +41,7 @@ function checkPassword(password, user) {
 	const validPassword = bcrypt.compareSync(password, user?.password);
 	return validPassword;
 }
+
+export async function signOut(user) {
+	await loginRepository.deleteOlderSession(user);
+}

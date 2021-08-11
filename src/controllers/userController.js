@@ -17,8 +17,7 @@ export async function sendUserInfos(req, res) {
 	}
 }
 
-export async function newExpense(req, res) {
-
+export async function userExpense(req, res) {
 	try {
 		const {value, description} = req.body;
 		const email = res.locals.user.email;
@@ -27,8 +26,24 @@ export async function newExpense(req, res) {
 			return res.sendStatus(400);
 		}
 
-		await userService.insertExpense(value, description, email);
+		await userService.addExpense(value, description, email);
+		res.sendStatus(201);
+	} catch(err) {
+		console.log(err);
+		res.status(500).send(err);
+	}
+}
 
+export async function userEntry(req, res) {
+	try {
+		const {value, description} = req.body;
+		const email = res.locals.user.email;
+
+		if(!value || description?.length === 0) {
+			return res.sendStatus(400);
+		}
+
+		await userService.addEntry(value, description, email);
 		res.sendStatus(201);
 	} catch(err) {
 		console.log(err);
