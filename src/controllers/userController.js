@@ -20,13 +20,13 @@ export async function sendUserInfos(req, res) {
 export async function userExpense(req, res) {
 	try {
 		const {value, description} = req.body;
-		const email = res.locals.user.email;
+		const id = res.locals.user.id;
 
 		if(!value || description?.length === 0) {
 			return res.sendStatus(400);
 		}
 
-		await userService.addExpense(value, description, email);
+		await userService.addExpense(value, description, id);
 		res.sendStatus(201);
 	} catch(err) {
 		console.log(err);
@@ -37,13 +37,13 @@ export async function userExpense(req, res) {
 export async function userEntry(req, res) {
 	try {
 		const {value, description} = req.body;
-		const email = res.locals.user.email;
+		const id = res.locals.user.id;
 
 		if(!value || description?.length === 0) {
 			return res.sendStatus(400);
 		}
 
-		await userService.addEntry(value, description, email);
+		await userService.addEntry(value, description, id);
 		res.sendStatus(201);
 	} catch(err) {
 		console.log(err);

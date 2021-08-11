@@ -5,7 +5,7 @@ export async function validateSession(token) {
     SELECT users.*, sessions.token
     FROM sessions
     JOIN users
-    ON users.email = sessions."userEmail"
+    ON users.id = sessions."userId"
     WHERE token = $1
 `, [token]);
 
@@ -18,15 +18,15 @@ export async function getUserTransactions(token) {
     SELECT transactions.* 
     FROM transactions
     JOIN sessions
-    ON sessions."userEmail" = transactions."userEmail"
+    ON sessions."userId" = transactions."userId"
     WHERE sessions.token = $1
 `, [token]);
 	return registers.rows;
 }
 
-export async function addUserTransaction(valueInteger,description, email) {
+export async function addUserTransaction(valueInteger,description, id) {
 	connection.query(`
-    INSERT INTO transactions (date, description, value, "userEmail") 
+    INSERT INTO transactions (date, description, value, "userId") 
     VALUES (NOW(), $1, $2, $3)
-`, [description, valueInteger, email]);
+`, [description, valueInteger, id]);
 }

@@ -10,12 +10,12 @@ export async function addUser(name, email, hash) {
 
 export async function deleteOlderSession(user) {
 	connection.query(`
-    DELETE FROM sessions WHERE "userEmail" = $1
-`, [user.email]);
+    DELETE FROM sessions WHERE "userId" = $1
+`, [user.id]);
 }
 
 export async function createNewSession(user, token) {
 	await connection.query(`
-    INSERT INTO sessions ("userEmail", token) VALUES ($1, $2)
-`, [user.email, token]);
+    INSERT INTO sessions ("userId", token) VALUES ($1, $2)
+`, [user.id, token]);
 }

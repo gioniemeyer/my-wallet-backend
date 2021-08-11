@@ -1,34 +1,14 @@
 /* eslint-disable no-undef */
 import supertest from "supertest";
-import app from "../src/app.js";
-import connection from "../src/database.js";
-
-let data = [];
-const dataUsers = [];
-
-beforeAll(async () => {
-	data = await connection.query("SELECT * FROM users");
-	dataUsers.push(data.rows);
-
-});
+import app from "../../src/app.js";
+import { clearDatabase, endConnection } from "../utils/database.js";
 
 beforeEach(async () => {
-	await connection.query("DELETE FROM users");
+	await clearDatabase();
 });
 
 afterAll(async () => {
-	await connection.query("DELETE FROM users");
-
-	for(let i = 0; i < dataUsers[0].length; i++) {
-		const name = dataUsers[0][i].name;
-		const email = dataUsers[0][i].email;
-		const password = dataUsers[0][i].password;
-		await connection.query(`
-            INSERT INTO users (name, email, password) VALUES ($1, $2, $3)
-        `,[name, email, password]);
-	}
-
-	connection.end();
+	endConnection();
 });
 
 describe("GET /subscribe", () => {

@@ -6,12 +6,12 @@ export async function userInfos(user) {
 	return(userData);
 }
 
-export async function addExpense(value, description, email) {
+export async function addExpense(value, description, id) {
 	let valueInteger = (value.replace(".", "") * (-1));
-	await userRepository.addUserTransaction(valueInteger, description, email);
+	await userRepository.addUserTransaction(valueInteger, description, id);
 }
 
-export async function addEntry(value, description, email) {
+export async function addEntry(value, description, id) {
 	const valueInteger = value?.replace(".", "");
-	await userRepository.addUserTransaction(valueInteger, description, email);
+	await userRepository.addUserTransaction(valueInteger, description, id);
 }
