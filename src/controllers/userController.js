@@ -1,13 +1,37 @@
-import * as userServices from "../services/userService.js";
+import * as userService from "../services/userService.js";
 
 export async function sendUserInfos(req, res) {
-	const user = res.locals.user;
+	try {
+		const user = res.locals.user;
 
-	const userInfos = await userServices.userInfos(user);
-
-	if(userInfos) {
-		res.status(200).send(userInfos);
-	} else {
-		res.sendStatus(401);
+		const userInfos = await userService.userInfos(user);
+    
+		if(userInfos) {
+			res.status(200).send(userInfos);
+		} else {
+			res.sendStatus(401);
+		}
+	} catch(err) {
+		console.log(err);
+		res.status(500).send(err);
 	}
-} 
+}
+
+export async function newExpense(req, res) {
+
+	try {
+		const {value, description} = req.body;
+		const email = res.locals.user.email;
+
+		if(!value || description?.length === 0) {
+			return res.sendStatus(400);
+		}
+
+		await userService.insertExpense(value, description, email);
+
+		res.sendStatus(201);
+	} catch(err) {
+		console.log(err);
+		res.status(500).send(err);
+	}
+}

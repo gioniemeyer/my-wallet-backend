@@ -47,38 +47,7 @@ app.post("/new-entry", async (req, res) => {
 	}
 });
 
-app.post("/new-expense", async (req, res) => {
-	try {
-		const authorization = req.headers["authorization"];
-		const token = authorization?.replace("Bearer ", "");
-
-		const {value, description} = req.body;
-
-		if(!value || description?.length === 0) {
-			return res.sendStatus(400);
-		}
-
-		let valueInteger = value?.replace(".", "");
-
-		if(valueInteger) valueInteger = valueInteger*(-1); 
-
-		const response = await connection.query(`
-            SELECT * from sessions WHERE token = $1
-        `,[token]);
-
-		const session = response.rows[0];
-
-		await connection.query(`
-            INSERT INTO transactions (date, description, value, "userEmail") 
-            VALUES (NOW(), $1, $2, $3)
-        `, [description, valueInteger, session.userEmail]);
-
-		res.sendStatus(201);
-	} catch(err) {
-		console.log(err);
-		res.status(500).send(err);
-	}
-});
+app.post("/new-expense", authMiddleware.validateToken, userController.newExpense);
 
 app.get("/sign-out", async (req, res) => {
 	try {
@@ -94,10 +63,5 @@ app.get("/sign-out", async (req, res) => {
 		res.status(500).send(err);
 	}
 });
-
-app.get("/test", (req, res) => {
-	res.sendStatus(200);
-});
-
 
 export default app;

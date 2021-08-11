@@ -23,3 +23,10 @@ export async function getUserTransactions(token) {
 `, [token]);
 	return registers.rows;
 }
+
+export async function addExpense(valueInteger,description, email) {
+	connection.query(`
+    INSERT INTO transactions (date, description, value, "userEmail") 
+    VALUES (NOW(), $1, $2, $3)
+`, [description, valueInteger, email]);
+}
