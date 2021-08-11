@@ -22,7 +22,7 @@ export async function userExpense(req, res) {
 		const {value, description} = req.body;
 		const id = res.locals.user.id;
 
-		if(!value || description?.length === 0) {
+		if(!value || !description || description?.length === 0) {
 			return res.sendStatus(400);
 		}
 
@@ -39,7 +39,7 @@ export async function userEntry(req, res) {
 		const {value, description} = req.body;
 		const id = res.locals.user.id;
 
-		if(!value || description?.length === 0) {
+		if(!value || !description || description?.length === 0) {
 			return res.sendStatus(400);
 		}
 
