@@ -16,21 +16,6 @@ app.post("/sign-in", loginController.signIn);
 
 app.get("/home", authMiddleware.validateToken, userController.sendUserInfos);
 
-app.get("/register", async (req, res) => {
-	const authorization = req.headers["authorization"];
-	const token = authorization.replace("Bearer ", "");
-
-	const response = await connection.query(`
-        SELECT transactions.* 
-        FROM transactions
-        JOIN sessions
-        ON sessions."userEmail" = transactions."userEmail"
-        WHERE sessions.token = $1
-    `, [token]);
-
-	res.status(200).send(response.rows);
-});
-
 app.post("/new-entry", async (req, res) => {
 	try {
 		const authorization = req.headers["authorization"];

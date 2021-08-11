@@ -5,7 +5,7 @@ export async function validateToken(req, res, next) {
 	const token = authorization?.replace("Bearer ", "");
 
 	if(token.length === 0) return res.sendStatus(401);
-	const user = userRepository.validateToken(token);
+	const user = await userRepository.validateSession(token);
 
 	if(!user) return res.sendStatus(401);
 
