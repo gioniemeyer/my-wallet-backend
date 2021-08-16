@@ -27,7 +27,7 @@ The following tools and frameworks were used in the construction of the project:
 
 ## How to run
 
-1. First of all, have you already visited the repository of the front-end? If not, please, start there. I'll wait.
+1. First of all, have you already visited the front-end repository? If not, please, start there (https://github.com/gioniemeyer/my-wallet). I'll wait.
 2. Clone this repository
 3. Install dependencies
 ```bash
