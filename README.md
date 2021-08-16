@@ -37,4 +37,6 @@ npm i
 ```bash
 npm run dev
 ```
-5. Now that your server is working, you may return to front-end instructions!
+5. Create an .env file based on env.example
+6. The files needed to create the database used by the application are in the folder "database", you can use dump.sql or databaseSQL(script)
+7. Now that your server is working, you may return to front-end instructions!
