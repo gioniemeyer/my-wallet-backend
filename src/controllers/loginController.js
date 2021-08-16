@@ -5,6 +5,7 @@ import * as loginService from "../services/loginService.js";
 export async function signUp(req, res) {
 	try {
 		const {name, email, password} = req.body;
+		console.log({name, email, password});
 		const errors = SignUpSchema.validate(req.body).error;
 		if(errors) return res.sendStatus(400);
         
