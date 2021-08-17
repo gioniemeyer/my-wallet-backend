@@ -35,8 +35,13 @@ npm i
 ```
 4. Create an .env file based on env.example
 5. The files needed to create development and test database used by the application are in the folder "utils", you can use dump.sql
-7. Run the back-end with
+6. Run the back-end with
 ```bash
 npm run dev
 ```
-8. Now that your server is working, you may return to front-end instructions!
+7. Now that your server is working, you may return to front-end instructions!
+
+Bonus: If you wanna test it you can ! Run tests with
+```bash
+npm run test
+```
