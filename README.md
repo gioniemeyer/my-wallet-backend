@@ -2,6 +2,8 @@
 
 Let's just say it's like the vegan leather that supports the My Wallet App ;)
 
+<img src="assets/mywallet.gif" />
+
 ## About
 
 This is an web application with which lots of people can manage their own expenses and revenues. Below are the implemented features:
